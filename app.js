@@ -94,16 +94,16 @@ document.addEventListener('click',event=>{
 document.addEventListener('change',event=>{if(event.target.id==='direction'){filters.direction=event.target.value;render();}});
 document.addEventListener('input',event=>{if(event.target.id==='search'){search=event.target.value;document.querySelector('#search-results').innerHTML=inventoryTable(filtered(state.products).filter(p=>[p.sku,p.name,p.owner,p.color].join(' ').toLowerCase().includes(search.toLowerCase())));}});
 document.addEventListener('submit',async event=>{
- event.preventDefault();const form=event.target,values=Object.fromEntries(new FormData(form));if(busy)return;
- if(form.id==='chat-form'){const text=values.message.trim();if(text)demoAnswer(text);return;}
- if(form.id==='forecast-form'){const result=Math.max(0,Math.ceil(Number(values.demand)*Number(values.days)+Number(values.buffer)-Number(values.stock)-Number(values.incoming)));document.querySelector('#forecast-result').innerHTML=`<div class="notice">Рекомендуемое пополнение: <strong>${n(result)} шт.</strong></div>`;return;}
+ event.preventDefault();const form=event.target,formId=form.getAttribute('id'),values=Object.fromEntries(new FormData(form));if(busy)return;
+ if(formId==='chat-form'){const text=values.message.trim();if(text)demoAnswer(text);return;}
+ if(formId==='forecast-form'){const result=Math.max(0,Math.ceil(Number(values.demand)*Number(values.days)+Number(values.buffer)-Number(values.stock)-Number(values.incoming)));document.querySelector('#forecast-result').innerHTML=`<div class="notice">Рекомендуемое пополнение: <strong>${n(result)} шт.</strong></div>`;return;}
  busy=true;const submit=form.querySelector('[type=submit]');if(submit)submit.disabled=true;
  try{
-  if(form.id==='receive-form')state=await repo.command('receive',{...values,quantity:Number(values.quantity),requestId:`receive-${values.id}`});
-  if(form.id==='move-form')state=await repo.command('move',{...values,requestId:crypto.randomUUID()});
-  if(form.id==='expense-form')state=await repo.command('expense',{...values,amount:Number(values.amount),id:crypto.randomUUID(),requestId:crypto.randomUUID()});
-  if(form.id==='reset-form'){state=await repo.reset();messages=[];}
-  closeModal();render();notify(form.id==='reset-form'?'Демо-данные восстановлены':'Изменения сохранены');
+  if(formId==='receive-form')state=await repo.command('receive',{...values,quantity:Number(values.quantity),requestId:`receive-${values.id}`});
+  if(formId==='move-form')state=await repo.command('move',{...values,requestId:crypto.randomUUID()});
+  if(formId==='expense-form')state=await repo.command('expense',{...values,amount:Number(values.amount),id:crypto.randomUUID(),requestId:crypto.randomUUID()});
+  if(formId==='reset-form'){state=await repo.reset();messages=[];}
+  closeModal();render();notify(formId==='reset-form'?'Демо-данные восстановлены':'Изменения сохранены');
  }catch(error){const errorEl=form.querySelector('.form-error');if(errorEl)errorEl.textContent=error.message;else notify(error.message);}finally{busy=false;if(submit)submit.disabled=false;}
 });
 document.addEventListener('keydown',event=>{
