@@ -1,0 +1,26 @@
+const paths={
+ dashboard:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+ box:'<path d="m12 3 9 5-9 5-9-5 9-5Zm-9 5v9l9 5 9-5V8M12 13v9M7.5 5.5l9 5"/>',
+ receive:'<path d="M4 13v7h16v-7M12 3v12m-5-5 5 5 5-5M4 16h3m10 0h3"/>',
+ move:'<path d="M3 7h17m-4-4 4 4-4 4M21 17H4m4-4-4 4 4 4"/>',
+ team:'<circle cx="9" cy="8" r="3"/><path d="M3 21v-3a6 6 0 0 1 12 0v3m0-16a3 3 0 0 1 0 6m4 10v-3a6 6 0 0 0-2-4"/>',
+ wallet:'<rect x="3" y="5" width="18" height="15" rx="2"/><path d="M3 7V5l14-3v3m4 7h-6v5h6m-3-2.5h.1"/>',
+ spark:'<path d="m12 3 2.6 6.4L21 12l-6.4 2.6L12 21l-2.6-6.4L3 12l6.4-2.6L12 3ZM20 3v4m-2-2h4"/>',
+ settings:'<path d="m9 3-1 3-3 1-2 5 2 5 3 1 1 3h6l1-3 3-1 2-5-2-5-3-1-1-3H9Z"/><circle cx="12" cy="12" r="3"/>',
+ chart:'<path d="M4 3v17h17M8 15l4-5 4 2 5-7"/>',
+ calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 11h18m-13 4h1m6 0h1"/>',
+ download:'<path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/>',
+ plus:'<path d="M12 5v14M5 12h14"/>',
+ search:'<circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/>',
+ bell:'<path d="M5 17h14l-2-4V8a5 5 0 0 0-10 0v5l-2 4Zm5 3h4"/>',
+ chevron:'<path d="m9 5 7 7-7 7"/>',
+ alert:'<path d="m12 3 10 18H2L12 3Zm0 6v5m0 3h.01"/>',
+ clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+ close:'<path d="m6 6 12 12M6 18 18 6"/>',
+ menu:'<path d="M4 6h16M4 12h16M4 18h16"/>',
+ send:'<path d="m3 3 18 9-18 9 4-9-4-9Zm4 9h14"/>',
+ check:'<path d="m5 12 4 4L19 6"/>',
+ server:'<rect x="3" y="3" width="18" height="7" rx="2"/><rect x="3" y="14" width="18" height="7" rx="2"/><path d="M7 6.5h.01M7 17.5h.01M12 7h5m-5 11h5"/>',
+ shield:'<path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6l8-3Z"/><path d="m8 12 3 3 5-6"/>'
+};
+export const icon=(name)=>`<svg class="icon" viewBox="0 0 24 24" aria-hidden="true">${paths[name]||paths.box}</svg>`;
