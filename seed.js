@@ -16,17 +16,24 @@ export function createSeed() {
   products[3].quarantine=24; products[6].quarantine=16; products[2].quarantine=8;
   const employees = Array.from({length:25},(_,i)=>({id:`e${i+1}`,name:['Алексей Смирнов','Мария Волкова','Денис Орлов','Анна Белова','Илья Соколов','Ольга Морозова','Максим Петров','Елена Котова','Павел Лебедев','Ирина Васильева','Андрей Мельников','Дарья Фролова','Никита Зайцев','Софья Никитина','Роман Попов','Ксения Тихонова','Сергей Крылов','Алина Козлова','Михаил Егоров','Вера Лукина','Артём Павлов','Полина Громова','Виктор Фомин','Юлия Власова','Антон Белов'][i],direction:i<10?'steel':i<16?'own':'ff',role:i%3===0?'Приёмщик':i%3===1?'Сборщик':'Кладовщик'}));
   const operations=[],shifts=[],finance=[];
-  for(let day=0;day<14;day++) {
-    const date=new Date(Date.UTC(2026,8,20+day)).toISOString().slice(0,10);
+  // Два года демо-истории: последние 60 дней хранятся по дням,
+  // более ранние периоды — недельными срезами, чтобы годовые сравнения
+  // работали без переполнения localStorage.
+  for(let daysAgo=729;daysAgo>=0;daysAgo--) {
+    const recent=daysAgo<60;
+    if(!recent&&daysAgo%7!==0)continue;
+    const factor=recent?1:7;
+    const point=new Date(DEMO_DATE+'T00:00:00Z');point.setUTCDate(point.getUTCDate()-daysAgo);
+    const date=point.toISOString().slice(0,10),sequence=729-daysAgo;
     for(let i=0;i<25;i++) {
-      const employee=employees[i],quantity=(i<10?142:275)+(day*13+i*17)%61;
+      const employee=employees[i],quantity=((i<10?142:275)+(sequence*13+i*17)%61)*factor;
       const type=['receive','pick','ship'][i%3],rate=employee.direction==='steel'?4:2;
-      operations.push({id:`op-${day}-${i}`,date,employeeId:employee.id,direction:employee.direction,type,quantity,rate,amount:quantity*rate,reference:`Смена ${date}`,confirmed:true});
-      shifts.push({id:`shift-${day}-${i}`,date,employeeId:employee.id,hours:8,basePay:800});
+      operations.push({id:`op-${daysAgo}-${i}`,date,employeeId:employee.id,direction:employee.direction,type,quantity,rate,amount:quantity*rate,reference:recent?`Смена ${date}`:`Неделя ${date}`,confirmed:true});
+      shifts.push({id:`shift-${daysAgo}-${i}`,date,employeeId:employee.id,hours:8*factor,basePay:800*factor});
     }
     for(const [j,direction] of ['steel','own','ff'].entries()) {
-      if(direction!=='own') for(const [k,category] of ['Хранение','Обработка'].entries()) finance.push({id:`rev-${day}-${j}-${k}`,date,direction,kind:'revenue',category,amount:(direction==='ff'?30000:21000)+day*260+j*900+k*7500,description:category+' · демо-начисление'});
-      for(const [k,category] of ['Аренда','Коммунальные услуги','Упаковка'].entries()) finance.push({id:`cost-${day}-${j}-${k}`,date,direction,kind:'expense',category,amount:[6800,1150,1900][k]+j*170,description:category+' · распределённая часть'});
+      if(direction!=='own') for(const [k,category] of ['Хранение','Обработка'].entries()) finance.push({id:`rev-${daysAgo}-${j}-${k}`,date,direction,kind:'revenue',category,amount:((direction==='ff'?30000:21000)+(sequence%31)*260+j*900+k*7500)*factor,description:category+' · демо-начисление'});
+      for(const [k,category] of ['Аренда','Коммунальные услуги','Упаковка'].entries()) finance.push({id:`cost-${daysAgo}-${j}-${k}`,date,direction,kind:'expense',category:category,amount:([6800,1150,1900][k]+j*170)*factor,description:category+' · распределённая часть'});
     }
   }
   const receipts=[

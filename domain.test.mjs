@@ -35,6 +35,19 @@ test('Направления складываются в общий резуль
  assert.equal(payroll(s,filters).reduce((n,p)=>n+p.total,0),m.payroll);
  assert.deepEqual(range('week'),{start:'2026-09-27',end:'2026-10-03'});
  assert.deepEqual(range('week',true),{start:'2026-09-20',end:'2026-09-26'});
+ assert.deepEqual(range('month'),{start:'2026-09-04',end:'2026-10-03'});
+ assert.deepEqual(range('month',true),{start:'2026-08-05',end:'2026-09-03'});
+ assert.deepEqual(range('year'),{start:'2025-10-04',end:'2026-10-03'});
+ assert.deepEqual(range('year',true),{start:'2024-10-04',end:'2025-10-03'});
+ for(const period of ['month','year']){
+  assert.ok(metrics(s,{direction:'all',period}).operations>0);
+  assert.ok(metrics(s,{direction:'all',period},true).operations>0);
+ }
+});
+test('Демо-история поддерживает годовое сравнение и помещается в браузерное хранилище',()=>{
+ const s=createSeed();
+ assert.ok(s.operations.some(x=>x.date<='2024-10-11'));
+ assert.ok(JSON.stringify(s).length<4_000_000);
 });
 test('Тренды и CSV корректно обрабатывают нулевую базу и формулы',()=>{
  assert.equal(trend(1,0).text,'Нет базы сравнения');assert.equal(trend(100,100).tone,'neutral');assert.equal(trend(120,100,false).tone,'negative');

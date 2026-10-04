@@ -1,7 +1,7 @@
 import { DEMO_DATE } from './seed.js';
 export const sum=(rows,key='amount')=>rows.reduce((v,x)=>v+Number(x[key]||0),0);
 export function range(period='today',previous=false) {
-  const n=period==='week'?7:1, end=new Date(DEMO_DATE+'T00:00:00Z');
+  const n=({today:1,week:7,month:30,year:365})[period]||1, end=new Date(DEMO_DATE+'T00:00:00Z');
   if(previous)end.setUTCDate(end.getUTCDate()-n);
   const start=new Date(end);start.setUTCDate(start.getUTCDate()-n+1);
   return {start:start.toISOString().slice(0,10),end:end.toISOString().slice(0,10)};
