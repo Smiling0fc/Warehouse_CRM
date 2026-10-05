@@ -58,5 +58,14 @@ export function addExpense(state,{amount,category,direction,description,id}){
  const next=structuredClone(state);if(next.finance.some(x=>x.id===id))return state;
  next.finance.push({id,date:DEMO_DATE,direction,kind:'expense',category,amount:Math.round(amount*100)/100,description:description.trim()});return next;
 }
+export function attachInvoice(state,{id,fileName,fileSize,mimeType}){
+ const clean=String(fileName||'').trim(),size=Number(fileSize),allowed=/\.(pdf|png|jpe?g)$/i;
+ assert(clean&&clean.length<=180&&allowed.test(clean),'Прикрепите счёт в PDF, PNG или JPG');
+ assert(Number.isFinite(size)&&size>0&&size<=10*1024*1024,'Размер файла должен быть не более 10 МБ');
+ const next=structuredClone(state),payment=next.debts.find(x=>x.id===id&&x.kind==='payable');assert(payment,'Платёж не найден');
+ payment.invoice={name:clean,size,type:String(mimeType||''),attachedAt:new Date().toISOString()};
+ next.audit.unshift({at:new Date().toISOString(),text:`${payment.party}: прикреплён счёт ${clean}`,actor:'Демо-управляющий'});
+ return next;
+}
 export function escapeHtml(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 export function csvCell(value){const s=String(value??'');return '"'+(/^[=+\-@\t\r]/.test(s)?"'"+s:s).replaceAll('"','""')+'"';}

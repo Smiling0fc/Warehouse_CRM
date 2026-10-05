@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createSeed } from './seed.js';
-import { receive, movePlace, addExpense, metrics, payroll, range, trend, csvCell } from './domain.js';
+import { receive, movePlace, addExpense, attachInvoice, metrics, payroll, range, trend, csvCell } from './domain.js';
 import { DemoRepository, HttpRepository } from './repository.js';
 const filters={direction:'all',period:'today'};
 test('Приёмка: фактическое количество, остаток, грузовое место и начисление согласованы',()=>{
@@ -23,6 +23,13 @@ test('Финансы: расход уменьшает результат оди�
  const next=addExpense(s,payload);assert.equal(metrics(next,filters).expenses,before.expenses+1234.5);
  assert.equal(metrics(next,filters).profit,before.profit-1234.5);assert.deepEqual(next.debts,s.debts);
  assert.deepEqual(addExpense(next,payload),next);
+});
+test('Платежи: счёт прикрепляется только к исходящему обязательству',()=>{
+ const s=createSeed(),next=attachInvoice(s,{id:'d3',fileName:'Аренда-октябрь.pdf',fileSize:204800,mimeType:'application/pdf'});
+ assert.equal(next.debts.find(x=>x.id==='d3').invoice.name,'Аренда-октябрь.pdf');
+ assert.equal(s.debts.find(x=>x.id==='d3').invoice,undefined);
+ assert.throws(()=>attachInvoice(s,{id:'d1',fileName:'Счёт.pdf',fileSize:100,mimeType:'application/pdf'}));
+ assert.throws(()=>attachInvoice(s,{id:'d3',fileName:'Счёт.exe',fileSize:100,mimeType:'application/octet-stream'}));
 });
 test('Перемещение сохраняет состав и историю без изменения товарного остатка',()=>{
  const s=createSeed(),next=movePlace(s,{id:'GM-1040',location:'A-12-02'});

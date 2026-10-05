@@ -1,10 +1,10 @@
 import { createSeed } from './seed.js';
-import { receive, movePlace, addExpense } from './domain.js';
+import { receive, movePlace, addExpense, attachInvoice } from './domain.js';
 const KEY='warehouse-crm-demo-v1';
 export class DemoRepository {
  constructor(storage=globalThis.localStorage){this.storage=storage;}
  async snapshot(){const text=this.storage.getItem(KEY);if(!text)return createSeed();const s=JSON.parse(text);if(s.schemaVersion!==1||!Array.isArray(s.operations))throw new Error('Демо-данные несовместимы. Откройте настройки и сбросьте демо.');return s;}
- async command(type,payload){const state=await this.snapshot();const reducers={receive,move:movePlace,expense:addExpense};if(!reducers[type])throw new Error('Неизвестная операция');const next=reducers[type](state,payload);this.storage.setItem(KEY,JSON.stringify(next));return next;}
+ async command(type,payload){const state=await this.snapshot();const reducers={receive,move:movePlace,expense:addExpense,invoice:attachInvoice};if(!reducers[type])throw new Error('Неизвестная операция');const next=reducers[type](state,payload);this.storage.setItem(KEY,JSON.stringify(next));return next;}
  async reset(){this.storage.removeItem(KEY);return createSeed();}
 }
 export class HttpRepository {
